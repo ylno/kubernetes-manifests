@@ -43,7 +43,7 @@ function generate_configs {
 
 	cd template
 	find . -type d -exec mkdir -p "../sm/{}" \;
-	for i in `find ${region} -type f -name "*.yaml"`; do
+	for i in `find . -type f -name "*.yaml"`; do
 	    echo "render ${i}"
 			cat ${i} | sed -e "$sed_script" | sed -e "$sed_script_base64" > ../sm/${i}
 	done
