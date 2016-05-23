@@ -1,0 +1,90 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: taiga
+    role: postgres-backup
+    version: v1
+  name: taiga-postgres-backup
+  namespace: taiga
+spec:
+  replicas: 1
+  selector:
+    app: taiga
+    role: postgres-backup
+    version: v1
+  template:
+    metadata:
+      labels:
+        app: taiga
+        role: postgres-backup
+        version: v1
+    spec:
+      containers:
+      - env:
+        - name: LOGLEVEL
+          value: debug
+        - name: HOST
+          value: taiga-postgres
+        - name: PORT
+          value: "5432"
+        - name: DATABASE
+          value: taiga
+        - name: USERNAME
+          value: taiga
+        - name: PASSWORD
+          value: {{taiga_database_password}}
+        - name: TARGETDIR
+          value: /backup
+        - name: WAIT
+          value: "1h"
+        - name: ONE_TIME
+          value: "false"
+        - name: LOCK
+          value: /var/run/postgres_backup_cron.lock
+        image: bborbe/postgres-backup:latest
+        name: backup
+        resources:
+          limits:
+            cpu: 500m
+            memory: 100Mi
+          requests:
+            cpu: 10m
+            memory: 10Mi
+        volumeMounts:
+        - mountPath: /backup
+          name: taiga-postgres-backup
+      - env:
+        - name: LOGLEVEL
+          value: "debug"
+        - name: LOCK
+          value: "/backup_cleanup_cron.run"
+        - name: WAIT
+          value: "1h"
+        - name: ONE_TIME
+          value: "false"
+        - name: KEEP
+          value: "5"
+        - name: DIR
+          value: "/backup"
+        - name: MATCH
+          value: "postgres_taiga_.*.dump"
+        image: bborbe/backup-cleanup-cron:latest
+        name: cleanup
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+          requests:
+            cpu: 10m
+            memory: 10Mi
+        volumeMounts:
+        - mountPath: /backup
+          name: taiga-postgres-backup
+      nodeSelector:
+        role: worker
+      volumes:
+      - name: taiga-postgres-backup
+        nfs:
+          path: /data/taiga-postgres-backup
+          server: {{nfs_server}}

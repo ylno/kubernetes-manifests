@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    app: hello-world
+    romulus/lb: vulcan
+    romulus/route: public
+  name: hello-world
+  namespace: hello-world
+spec:
+  rules:
+  - host: hello-world.tools.seibert-media.net
+    http:
+      paths:
+      - backend:
+          serviceName: hello-world
+          servicePort: web
+        path: /

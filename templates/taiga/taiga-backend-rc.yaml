@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: taiga
+    role: backend
+    version: v1
+  name: taiga-backend
+  namespace: taiga
+spec:
+  replicas: 1
+  selector:
+    app: taiga
+    role: backend
+    version: v1
+  template:
+    metadata:
+      labels:
+        app: taiga
+        role: backend
+        version: v1
+    spec:
+      containers:
+      - env:
+        - name: PUBLIC_HOSTNAME
+          value: "taiga.tools.seibert-media.net"
+        - name: PUBLIC_REGISTER_ENABLED
+          value: "True"
+        - name: DATABASE_PASSWORD
+          value: {{taiga_database_password}}
+        - name: SMTP_HOST
+          value: smtp
+        - name: SMTP_PORT
+          value: "25"
+        image: bborbe/taiga-backend:latest
+        name: backend
+        ports:
+        - containerPort: 8000
+          name: taiga-backend
+        resources:
+          limits:
+            cpu: 500m
+            memory: 400Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        volumeMounts:
+        - mountPath: /taiga/media
+          name: taiga-media
+        - mountPath: /taiga/static
+          name: taiga-static
+      - image: nginx
+        name: static
+        ports:
+        - containerPort: 80
+          name: taiga-static
+        resources:
+          limits:
+            cpu: 250m
+            memory: 25Mi
+          requests:
+            cpu: 10m
+            memory: 5Mi
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html/static
+          name: taiga-static
+          readOnly: true
+      nodeSelector:
+        role: worker
+      volumes:
+      - name: taiga-media
+        nfs:
+          path: /data/taiga-media
+          server: {{nfs_server}}
+      - emptyDir: {}
+        name: taiga-static

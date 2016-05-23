@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: aptly
+    role: api
+    version: v1
+  name: aptly-api
+  namespace: aptly
+spec:
+  replicas: 1
+  selector:
+    app: aptly
+    role: api
+    version: v1
+  template:
+    metadata:
+      labels:
+        app: aptly
+        role: api
+        version: v1
+    spec:
+      containers:
+      - image: bborbe/aptly-dbcleanup:latest
+        readinessProbe:
+          httpGet:
+            path: /api/version
+            port: 3845
+            scheme: HTTP
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /api/version
+            port: 3845
+            scheme: HTTP
+          initialDelaySeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: api
+        ports:
+        - containerPort: 3845
+          name: api
+        resources:
+          limits:
+            cpu: 500m
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 50Mi
+        volumeMounts:
+        - mountPath: /aptly
+          name: aptly
+      - image: bborbe/auth-http-proxy:latest
+        env:
+        - name: LOGLEVEL
+          value: debug
+        - name: PORT
+          value: "3846"
+        - name: AUTH_ADDRESS
+          value: "auth-api.auth.svc.cluster.local:8080"
+        - name: AUTH_APPLICATION_NAME
+          value: "aptly"
+        - name: AUTH_APPLICATION_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: aptly
+              key: auth-application-password
+        - name: AUTH_REALM
+          value: "aptly"
+        - name: AUTH_GROUPS
+          value: "aptly-api"
+        - name: TARGET_ADDRESS
+          value: "localhost:3845"
+        name: auth
+        ports:
+        - containerPort: 3846
+          name: api-auth
+        resources:
+          limits:
+            cpu: 500m
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 50Mi
+      nodeSelector:
+        role: worker
+      volumes:
+      - name: aptly
+        nfs:
+          path: /data/aptly
+          server: {{nfs_server}}

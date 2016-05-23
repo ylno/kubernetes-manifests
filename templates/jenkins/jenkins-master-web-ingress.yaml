@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    app: jenkins
+    romulus/lb: vulcan
+    romulus/route: public
+  name: jenkins-master-web
+  namespace: jenkins
+spec:
+  rules:
+  - host: jenkins.tools.seibert-media.net
+    http:
+      paths:
+      - backend:
+          serviceName: jenkins-master-web
+          servicePort: web

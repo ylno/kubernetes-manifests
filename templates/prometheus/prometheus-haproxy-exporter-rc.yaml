@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: prometheus
+    role: haproxy-exporter
+    version: v1
+  name: prometheus-haproxy
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    app: prometheus
+    role: haproxy-exporter
+    version: v1
+  template:
+    metadata:
+      labels:
+        app: prometheus
+        role: haproxy-exporter
+        version: v1
+    spec:
+      containers:
+      - args:
+        - -haproxy.scrape-uri=http://stats:{{haproxy_stats_password}}@ipfire.{{k8s_node_domain}}:1936/?stats;csv
+        image: prom/haproxy-exporter:latest
+        name: haproxy-exporter
+        ports:
+        - containerPort: 9101
+          name: exporter
+        resources:
+          limits:
+            cpu: 50m
+            memory: 50Mi
+          requests:
+            cpu: 10m
+            memory: 10Mi
+      nodeSelector:
+        role: worker

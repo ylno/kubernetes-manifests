@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: romulus
+  name: romulus
+  namespace: kube-system
+spec:
+  ports:
+  - nodePort: 30080
+    port: 1080
+  selector:
+    app: romulus
+  type: NodePort

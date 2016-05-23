@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: taiga
+    role: public
+    version: v1
+  name: taiga-media
+  namespace: taiga
+spec:
+  replicas: 1
+  selector:
+    app: taiga
+    role: public
+    version: v1
+  template:
+    metadata:
+      labels:
+        app: taiga
+        role: public
+        version: v1
+    spec:
+      containers:
+      - image: jrelva/nginx-autoindex
+        name: taiga-media
+        ports:
+        - containerPort: 80
+          name: taiga-media
+        resources:
+          limits:
+            cpu: 250m
+            memory: 25Mi
+          requests:
+            cpu: 10m
+            memory: 5Mi
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html/media
+          name: taiga-media
+          readOnly: true
+      nodeSelector:
+        role: worker
+      volumes:
+      - name: taiga-media
+        nfs:
+          path: /data/taiga-media
+          server: {{nfs_server}}

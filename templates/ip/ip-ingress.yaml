@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    app: ip
+    romulus/lb: vulcan
+    romulus/route: public
+  name: ip
+  namespace: ip
+spec:
+  rules:
+  - host: ip.tools.seibert-media.net
+    http:
+      paths:
+      - backend:
+          serviceName: ip
+          servicePort: web
+        path: /

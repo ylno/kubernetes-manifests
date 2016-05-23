@@ -1,0 +1,55 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  labels:
+    app: glusterfs
+    version: v1
+  name: glusterfs
+  namespace: kube-system
+spec:
+  template:
+    metadata:
+      labels:
+        app: glusterfs
+        version: v1
+    spec:
+      containers:
+      - image: bborbe/glusterfs:latest
+        name: glusterfs
+        ports:
+        - containerPort: 24007
+        - containerPort: 24008
+        - containerPort: 49152
+        - containerPort: 38465
+        - containerPort: 38466
+        - containerPort: 38467
+        - containerPort: 2049
+        - containerPort: 111
+        - containerPort: 111
+          protocol: UDP
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 500Mi
+          requests:
+            cpu: 50m
+            memory: 150Mi
+        securityContext:
+          capabilities: {}
+          privileged: true
+        volumeMounts:
+        - mountPath: /storage
+          name: storage
+        - mountPath: /var/lib/glusterd
+          name: glusterfs-config
+      hostNetwork: true
+      nodeSelector:
+        role: worker
+      serviceAccount: glusterfs
+      volumes:
+      - hostPath:
+          path: /storage
+        name: storage
+      - hostPath:
+          path: /var/lib/glusterd
+        name: glusterfs-config

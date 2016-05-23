@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: hello-world
+    romulus/lb: vulcan
+    romulus/route: public
+  name: hello-world
+  namespace: hello-world
+spec:
+  ports:
+  - name: web
+    port: 80
+    protocol: TCP
+    targetPort: http
+  selector:
+    app: hello-world

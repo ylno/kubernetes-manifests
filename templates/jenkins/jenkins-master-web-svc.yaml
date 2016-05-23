@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: jenkins
+    role: master
+    romulus/lb: vulcan
+    romulus/route: public
+  name: jenkins-master-web
+  namespace: jenkins
+spec:
+  ports:
+  - name: web
+    port: 8080
+  selector:
+    app: jenkins
+    role: master

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mumble
+  name: mumble
+  namespace: mumble
+spec:
+  ports:
+  - nodePort: 30019
+    port: 64738
+  selector:
+    app: mumble
+  type: NodePort

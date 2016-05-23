@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nsq
+    role: nsqd
+  name: nsqd
+  namespace: nsq
+spec:
+  ports:
+  - name: tcp
+    port: 4150
+  - name: http
+    port: 4151
+  selector:
+    app: nsq
+    role: nsqd

@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: bot
+    role: connector-hipchat
+    version: v1
+  name: bot-connector-hipchat
+  namespace: bot
+spec:
+  replicas: 1
+  selector:
+    app: bot
+    role: connector-hipchat
+    version: v1
+  template:
+    metadata:
+      labels:
+        app: bot
+        role: connector-hipchat
+        version: v1
+    spec:
+      containers:
+      - env:
+        - name: LOGLEVEL
+          value: debug
+        - name: PORT
+          value: "8080"
+        - name: DEBUG
+          value: "true"
+        - name: PREFIX
+          value: "/bot/hipchat"
+        - name: BASE_URL
+          value: "https://tools.seibert-media.net/bot/hipchat"
+        - name: MASTER
+          value: bot-master:8080
+        - name: BOT_NAME
+          value: SeibertMediaBot
+        - name: LEDISDB_ADDRESS
+          value: bot-connector-hipchat-db:6380
+        image: bborbe/bot-connector-hipchat:latest
+        name: connector-hipchat
+        ports:
+        - containerPort: 8080
+          name: bot
+        resources:
+          limits:
+            cpu: 500m
+            memory: 50Mi
+          requests:
+            cpu: 10m
+            memory: 10Mi
+      nodeSelector:
+        role: worker

@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    name: maven
+    romulus/lb: vulcan
+    romulus/route: public
+  name: maven-public-ingress
+  namespace: maven
+spec:
+  rules:
+  - host: maven.tools.seibert-media.net
+    http:
+      paths:
+      - backend:
+          serviceName: maven-public
+          servicePort: maven-public

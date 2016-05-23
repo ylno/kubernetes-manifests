@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: smtp
+    version: v1
+  name: smtp
+  namespace: smtp
+spec:
+  replicas: 1
+  selector:
+    app: smtp
+    version: v1
+  template:
+    metadata:
+      labels:
+        app: smtp
+        version: v1
+    spec:
+      containers:
+      - env:
+        - name: SMTP_HOST
+          value: iredmail.mailfolder.org
+        - name: SMTP_PORT
+          value: "25"
+        - name: SERVER_HOSTNAME
+          value: smtp.benjamin-borbe.de
+        - name: DOMAIN
+          value: benjamin-borbe.de
+        - name: RELAY_NETWORKS
+          value: 10.101.0.0/16 10.102.0.0/16 10.103.0.0/16 127.0.0.0/8
+        - name: NAMESERVER
+          value: {{dns_server}}
+        image: bborbe/smtp:latest
+        name: smtp
+        ports:
+        - containerPort: 25
+          name: smtp
+        resources:
+          limits:
+            cpu: 250m
+            memory: 100Mi
+          requests:
+            cpu: 10m
+            memory: 10Mi
+      nodeSelector:
+        role: worker

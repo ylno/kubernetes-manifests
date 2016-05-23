@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: bot
+    role: connector-fb-sm
+    version: v1
+  name: bot-connector-fb-sm
+  namespace: bot
+spec:
+  replicas: 1
+  selector:
+    app: bot
+    role: connector-fb-sm
+    version: v1
+  template:
+    metadata:
+      labels:
+        app: bot
+        role: connector-fb-sm
+        version: v1
+    spec:
+      containers:
+      - env:
+        - name: LOGLEVEL
+          value: debug
+        - name: PORT
+          value: "8080"
+        - name: DEBUG
+          value: "true"
+        - name: PREFIX
+          value: "/bot/facebook/seibertmedia"
+        - name: MASTER
+          value: bot-master:8080
+        - name: BOT_NAME
+          value: "HighriseBot"
+        - name: SECRET
+          valueFrom:
+            secretKeyRef:
+              key: facebook-secret-sm
+              name: bot
+        - name: TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: facebook-token-sm
+              name: bot
+        image: bborbe/bot-connector-facebook:latest
+        name: connector-fb-sm
+        ports:
+        - containerPort: 8080
+          name: bot
+        resources:
+          limits:
+            cpu: 500m
+            memory: 50Mi
+          requests:
+            cpu: 10m
+            memory: 10Mi
+      nodeSelector:
+        role: worker

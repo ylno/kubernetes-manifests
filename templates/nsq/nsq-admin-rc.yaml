@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: nsq
+    role: nsqadmin
+    version: v1
+  name: nsqadmin
+  namespace: nsq
+spec:
+  replicas: 1
+  selector:
+    app: nsq
+    role: nsqadmin
+    version: v1
+  template:
+    metadata:
+      labels:
+        app: nsq
+        role: nsqadmin
+        version: v1
+    spec:
+      containers:
+      - command:
+        - /nsqadmin
+        - --lookupd-http-address=nsqlookupd:4161
+        image: nsqio/nsq:latest
+        name: nsqadmin
+        ports:
+        - containerPort: 4171
+          name: http
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+          requests:
+            cpu: 10m
+            memory: 10Mi
+      nodeSelector:
+        role: worker

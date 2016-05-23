@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: romulus
+    k8s-app: ingress-controller
+    kubernetes.io/cluster-service: "true"
+    lb: vulcan
+    version: v1
+  name: ingress-controller-v1
+  namespace: kube-system
+spec:
+  selector:
+    k8s-app: ingress-controller
+    version: v1
+  template:
+    metadata:
+      labels:
+        app: romulus
+        k8s-app: ingress-controller
+        kubernetes.io/cluster-service: "true"
+        lb: vulcan
+        version: v1
+    spec:
+      containers:
+      - args:
+        - --data-dir=/var/etcd/data
+        - --name=etcd0
+        - --listen-client-urls=http://0.0.0.0:2379,http://0.0.0.0:4001
+        - --advertise-client-urls=http://127.0.0.1:2379,http://127.0.0.1:4001
+        - --initial-cluster-token=ingress-etcd
+        image: quay.io/coreos/etcd:v2.3.3
+        name: etcd
+        resources:
+          limits:
+            cpu: 100m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 50Mi
+        volumeMounts:
+        - mountPath: /var/etcd/data
+          name: etcd-storage
+      - command:
+        - /vulcand
+        - -apiInterface=0.0.0.0
+        - -apiPort=8182
+        - -etcd=http://127.0.0.1:2379
+        - -interface=0.0.0.0
+        - -port=1080
+        - -logSeverity=INFO
+        image: bborbe/vulcand:latest
+        name: vulcan
+        ports:
+        - containerPort: 1080
+          name: proxy
+          protocol: TCP
+        - containerPort: 8182
+          name: api
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 500m
+            memory: 100Mi
+          requests:
+            cpu: 10m
+            memory: 25Mi
+        volumeMounts:
+        - mountPath: /tmp
+          name: vulcand-tmp
+      - command:
+        - /romulus
+        - --kube-api=https://kubernetes.default
+        - --provider=vulcand
+        - --vulcand-api=http://127.0.0.1:8182
+        - --selector=lb=vulcan
+        - --selector=route=public
+        - --loglevel=debug
+        image: bborbe/romulus:latest
+        name: romulus
+        resources:
+          limits:
+            cpu: 500m
+            memory: 100Mi
+          requests:
+            cpu: 10m
+            memory: 25Mi
+      volumes:
+      - emptyDir: {}
+        name: etcd-storage
+      - emptyDir: {}
+        name: vulcand-tmp

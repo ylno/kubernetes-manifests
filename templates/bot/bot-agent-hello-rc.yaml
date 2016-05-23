@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: bot
+    role: agent-hello
+    version: v1
+  name: bot-agent-hello
+  namespace: bot
+spec:
+  replicas: 1
+  selector:
+    app: bot
+    role: agent-hello
+    version: v1
+  template:
+    metadata:
+      labels:
+        app: bot
+        role: agent-hello
+        version: v1
+    spec:
+      containers:
+      - env:
+        - name: LOGLEVEL
+          value: debug
+        - name: NSQD_ADDRESS
+          value: localhost:4150
+        - name: NSQ_LOOKUPD_ADDRESS
+          value: nsqlookupd.nsq.svc.cluster.local:4161
+        image: bborbe/bot-agent-hello:latest
+        name: agent
+        resources:
+          limits:
+            cpu: 500m
+            memory: 50Mi
+          requests:
+            cpu: 10m
+            memory: 10Mi
+      - command:
+        - /bin/sh
+        - -c
+        - /nsqd --broadcast-address=$$(hostname -i) --lookupd-tcp-address=nsqlookupd.nsq.svc.cluster.local:4160
+        image: nsqio/nsq:latest
+        name: nsqd
+        ports:
+        - containerPort: 4150
+          name: tcp
+        - containerPort: 4151
+          name: http
+        resources:
+          limits:
+            cpu: 500m
+            memory: 100Mi
+          requests:
+            cpu: 10m
+            memory: 10Mi
+      nodeSelector:
+        role: worker

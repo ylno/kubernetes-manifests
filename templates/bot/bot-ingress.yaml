@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    app: bot
+    romulus/lb: vulcan
+    romulus/route: public
+  name: bot
+  namespace: bot
+spec:
+  rules:
+  - host: tools.seibert-media.net
+    http:
+      paths:
+      - backend:
+          serviceName: bot-connector-fb-hq
+          servicePort: web
+        path: /bot/facebook/highrise/.*
+  - host: tools.seibert-media.net
+    http:
+      paths:
+      - backend:
+          serviceName: bot-connector-fb-sm
+          servicePort: web
+        path: /bot/facebook/seibertmedia/.*
+  - host: tools.seibert-media.net
+    http:
+      paths:
+      - backend:
+          serviceName: bot-connector-hipchat
+          servicePort: web
+        path: /bot/hipchat/.*

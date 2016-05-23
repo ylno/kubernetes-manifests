@@ -1,0 +1,12 @@
+*.pem
+*.csr
+*.srl
+.idea
+.project
+.settings/
+*.iml
+target
+/secrets-*.sh
+/rn
+/sm
+/sample

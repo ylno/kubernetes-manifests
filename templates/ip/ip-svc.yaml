@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ip
+    romulus/lb: vulcan
+    romulus/route: public
+  name: ip
+  namespace: ip
+spec:
+  ports:
+  - name: web
+    port: 80
+    protocol: TCP
+    targetPort: http
+  selector:
+    app: ip

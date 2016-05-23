@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: heapster
+    k8s-app: influxGrafana
+    kubernetes.io/cluster-service: "true"
+    version: v4
+  name: heapster-influxdb-grafana-v4
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    k8s-app: influxGrafana
+    version: v4
+  template:
+    metadata:
+      labels:
+        app: heapster
+        k8s-app: influxGrafana
+        kubernetes.io/cluster-service: "true"
+        version: v4
+    spec:
+      containers:
+      - image: gcr.io/google_containers/heapster_influxdb:v0.6
+        name: influxdb
+        ports:
+        - containerPort: 8083
+          hostPort: 8083
+        - containerPort: 8086
+          hostPort: 8086
+        resources:
+          limits:
+            cpu: 100m
+            memory: 600Mi
+          requests:
+            cpu: 100m
+            memory: 250Mi
+        volumeMounts:
+        - mountPath: /data
+          name: influxdb-persistent-storage
+      - env:
+        - name: INFLUXDB_SERVICE_URL
+          value: http://127.0.0.1:8086
+        - name: GF_AUTH_BASIC_ENABLED
+          value: "true"
+        - name: GF_AUTH_ANONYMOUS_ENABLED
+          value: "false"
+        - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+          value: Admin
+        - name: GF_SERVER_ROOT_URL
+          value: /grafana/
+        image: gcr.io/google_containers/heapster_grafana:v2.6.0-2
+        name: grafana
+        ports:
+        - containerPort: 3000
+        resources:
+          limits:
+            cpu: 100m
+            memory: 50Mi
+          requests:
+            cpu: 100m
+            memory: 50Mi
+        volumeMounts:
+        - mountPath: /etc/grafana
+          name: heapster-grafana-etc
+        - mountPath: /var/lib/grafana
+          name: heapster-grafana-data
+      nodeSelector:
+        role: worker
+      volumes:
+      - name: influxdb-persistent-storage
+        emptyDir: {}
+      - name: heapster-grafana-data
+        nfs:
+          path: /data/heapster-grafana-data
+          server: {{nfs_server}}
+      - name: heapster-grafana-etc
+        nfs:
+          path: /data/heapster-grafana-etc
+          server: {{nfs_server}}

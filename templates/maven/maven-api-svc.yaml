@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: maven
+    role: api
+  name: maven-api
+  namespace: maven
+spec:
+  ports:
+  - name: api
+    port: 8080
+  selector:
+    app: maven
+    role: api

@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: prometheus
+    role: backend
+    version: v1
+  name: prometheus
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    app: prometheus
+    role: backend
+    version: v1
+  template:
+    metadata:
+      labels:
+        app: prometheus
+        role: backend
+        version: v1
+    spec:
+      containers:
+      - image: bborbe/prometheus:latest
+        env:
+          - name: DOMAIN
+            value: {{k8s_node_domain}}
+        name: prometheus
+        ports:
+        - containerPort: 9090
+          name: prometheus
+        resources:
+          limits:
+            cpu: 100m
+            memory: 800Mi
+          requests:
+            cpu: 10m
+            memory: 400Mi
+        volumeMounts:
+        - mountPath: /prometheus
+          name: prometheus
+      nodeSelector:
+        role: worker
+      volumes:
+      - name: prometheus
+        emptyDir: {}

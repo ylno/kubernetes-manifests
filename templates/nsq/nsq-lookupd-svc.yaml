@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nsq
+    role: nsqlookupd
+  name: nsqlookupd
+  namespace: nsq
+spec:
+  ports:
+  - name: tcp
+    port: 4160
+  - name: http
+    port: 4161
+  selector:
+    app: nsq
+    role: nsqlookupd

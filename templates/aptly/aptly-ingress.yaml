@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    name: aptly
+    romulus/lb: vulcan
+    romulus/route: public
+  name: aptly
+  namespace: aptly
+spec:
+  rules:
+  - host: aptly.tools.seibert-media.net
+    http:
+      paths:
+      - backend:
+          serviceName: aptly-public
+          servicePort: web
+        path: /.*
+  - host: aptly.tools.seibert-media.net
+    http:
+      paths:
+      - backend:
+          serviceName: aptly-auth-api
+          servicePort: web
+        path: /api/.*

@@ -1,0 +1,39 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    name: taiga
+    romulus/lb: vulcan
+    romulus/route: public
+  name: taiga
+  namespace: taiga
+spec:
+  rules:
+  - host: taiga.tools.seibert-media.net
+    http:
+      paths:
+      - backend:
+          serviceName: taiga-frontend
+          servicePort: frontend
+        path: /.*
+  - host: taiga.tools.seibert-media.net
+    http:
+      paths:
+      - backend:
+          serviceName: taiga-backend
+          servicePort: backend
+        path: /api/.*
+  - host: taiga.tools.seibert-media.net
+    http:
+      paths:
+      - backend:
+          serviceName: taiga-media
+          servicePort: media
+        path: /media/.*
+  - host: taiga.tools.seibert-media.net
+    http:
+      paths:
+      - backend:
+          serviceName: taiga-static
+          servicePort: static
+        path: /static/.*

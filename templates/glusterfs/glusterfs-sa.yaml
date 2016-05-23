@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: glusterfs
+    version: v1
+  name: glusterfs
+  namespace: kube-system

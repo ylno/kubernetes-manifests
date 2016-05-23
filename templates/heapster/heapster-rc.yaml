@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: heapster
+    k8s-app: heapster
+    kubernetes.io/cluster-service: "true"
+    version: v1.0.2
+  name: heapster-v1.0.2
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    k8s-app: heapster
+    version: v1.0.2
+  template:
+    metadata:
+      labels:
+        app: heapster
+        k8s-app: heapster
+        kubernetes.io/cluster-service: "true"
+        version: v1.0.2
+    spec:
+      containers:
+      - command:
+        - /heapster
+        - --source=kubernetes:https://kubernetes.default
+        - --sink=influxdb:http://heapster-influxdb:8086
+        - --metric_resolution=60s
+        image: gcr.io/google_containers/heapster:v1.0.2
+        name: heapster
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 50Mi
+      - command:
+        - /eventer
+        - --source=kubernetes:''
+        - --sink=influxdb:http://heapster-influxdb:8086
+        image: gcr.io/google_containers/heapster:v1.0.2
+        name: eventer
+        resources:
+          limits:
+            cpu: 100m
+            memory: 50Mi
+          requests:
+            cpu: 100m
+            memory: 20Mi
+      nodeSelector:
+        role: worker

@@ -1,0 +1,54 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  labels:
+    app: prometheus
+    version: v1
+  name: prometheus-node-exporter
+  namespace: kube-system
+spec:
+  template:
+    metadata:
+      labels:
+        app: prometheus
+        role: node-exporter
+        version: v1
+    spec:
+      containers:
+      - args:
+        - -collector.procfs=/host/proc
+        - -collector.sysfs=/host/sys
+        - -collector.filesystem.ignored-mount-points='^/(sys|proc|dev|host|etc)($|/)'
+        image: prom/node-exporter
+        name: prom-node-exporter
+        ports:
+        - containerPort: 9100
+          name: web
+        resources:
+          limits:
+            cpu: 100m
+            memory: 50Mi
+          requests:
+            cpu: 10m
+            memory: 10Mi
+        volumeMounts:
+        - mountPath: /host/proc
+          name: proc
+          readOnly: true
+        - mountPath: /host/sys
+          name: proc
+          readOnly: true
+        - mountPath: /rootfs
+          name: rootfs
+          readOnly: true
+      hostNetwork: true
+      volumes:
+      - hostPath:
+          path: /proc
+        name: proc
+      - hostPath:
+          path: /sys
+        name: sys
+      - hostPath:
+          path: /
+        name: rootfs

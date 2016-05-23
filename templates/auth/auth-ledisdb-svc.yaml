@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: auth
+  name: auth-ledisdb
+  namespace: auth
+spec:
+  ports:
+  - port: 6380
+  selector:
+    app: auth
+    role: ledisdb
