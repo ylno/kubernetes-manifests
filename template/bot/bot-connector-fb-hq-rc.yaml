@@ -29,7 +29,7 @@ spec:
         - name: DEBUG
           value: "true"
         - name: PREFIX
-          value: "/bot/facebook/highrise"
+          value: /bot/facebook/highrise
         - name: MASTER
           value: bot-master:8080
         - name: BOT_NAME

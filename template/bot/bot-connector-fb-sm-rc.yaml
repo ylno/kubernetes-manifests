@@ -29,11 +29,11 @@ spec:
         - name: DEBUG
           value: "true"
         - name: PREFIX
-          value: "/bot/facebook/seibertmedia"
+          value: /bot/facebook/seibertmedia
         - name: MASTER
           value: bot-master:8080
         - name: BOT_NAME
-          value: "HighriseBot"
+          value: HighriseBot
         - name: SECRET
           valueFrom:
             secretKeyRef:

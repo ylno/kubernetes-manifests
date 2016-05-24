@@ -29,9 +29,9 @@ spec:
         - name: DEBUG
           value: "true"
         - name: PREFIX
-          value: "/bot/hipchat"
+          value: /bot/hipchat
         - name: BASE_URL
-          value: "https://tools.seibert-media.net/bot/hipchat"
+          value: https://tools.seibert-media.net/bot/hipchat
         - name: MASTER
           value: bot-master:8080
         - name: BOT_NAME
