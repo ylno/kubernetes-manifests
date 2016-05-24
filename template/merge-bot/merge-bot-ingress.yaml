@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    app: merge-bot
+    romulus/lb: vulcan
+    romulus/route: public
+  name: merge-bot
+  namespace: merge-bot
+spec:
+  rules:
+  - host: tools.seibert-media.net
+    http:
+      paths:
+      - backend:
+          serviceName: merge-bot
+          servicePort: web
+        path: /merge-bot/.*
