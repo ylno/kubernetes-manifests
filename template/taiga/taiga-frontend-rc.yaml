@@ -21,12 +21,12 @@ spec:
         version: v1
     spec:
       containers:
-      - image: bborbe/taiga-frontend:latest
-        env:
+      - env:
         - name: PUBLIC_HOSTNAME
-          value: "http://taiga.tools.seibert-media.net/api/v1/"
+          value: http://taiga.tools.seibert-media.net/api/v1/
         - name: PUBLIC_REGISTER_ENABLED
           value: "true"
+        image: bborbe/taiga-frontend:latest
         name: taiga-frontend
         ports:
         - containerPort: 80
