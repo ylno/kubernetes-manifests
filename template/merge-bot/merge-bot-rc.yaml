@@ -23,6 +23,18 @@ spec:
           value: debug
         - name: PORT
           value: "8080"
+        - name: PREFIX
+          value: /merge-bot
+        - name: USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: merge-bot
+        - name: PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: merge-bot
         image: bborbe/merge-bot:latest
         name: merge-bot
         ports:
