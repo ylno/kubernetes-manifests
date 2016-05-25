@@ -34,10 +34,11 @@ function generate_configs {
 	weather_api_key=${weather_api_key:=S3CR3T}
 	github_username=${github_username:=S3CR3T}
 	github_password=${github_password:=S3CR3T}
+	github_secret=${github_secret:=S3CR3T}
 
 	sed_script=""
 	sed_script_base64=""
-	for var in github_username github_password aptly_auth_password auth_application_password auth_admin_token facebook_secret_sm facebook_token_sm facebook_secret_hq facebook_token_hq haproxy_stats_password highrise_auth_password storage_auth_password taiga_database_password telegram_token telegram_token_hq weather_api_key region nfs_server dns_server k8s_node_domain taiga_public_hostname; do
+	for var in github_username github_password github_secret aptly_auth_password auth_application_password auth_admin_token facebook_secret_sm facebook_token_sm facebook_secret_hq facebook_token_hq haproxy_stats_password highrise_auth_password storage_auth_password taiga_database_password telegram_token telegram_token_hq weather_api_key region nfs_server dns_server k8s_node_domain taiga_public_hostname; do
 		base64=$(base64encode "${!var}")
 		sed_script+="s,{{$var}},${!var},g;"
 		sed_script_base64+="s,{{${var}_base64}},${base64},g;"
