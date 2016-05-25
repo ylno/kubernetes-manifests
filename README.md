@@ -1,5 +1,19 @@
 # Kubernetes manifects 
 
+## Create secrets-sm.sh
+
+```
+#!/bin/bash
+
+aptly_auth_password="S3CR3T"
+```
+
+## Generate
+
+```
+./generate.sh
+```
+
 ## Copyright and license
 
     Copyright (c) 2016, Benjamin Borbe <bborbe@rocketnews.de>
