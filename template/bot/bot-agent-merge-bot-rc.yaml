@@ -28,7 +28,7 @@ spec:
           value: localhost:4150
         - name: NSQ_LOOKUPD_ADDRESS
           value: nsqlookupd.nsq.svc.cluster.local:4161
-        - name: STORAGE_ADDRESS
+        - name: MERGE_BOT_ADDRESS
           value: merge-bot.merge-bot.svc.cluster.local:8080
         image: bborbe/bot-agent-merge-bot:latest
         name: agent
