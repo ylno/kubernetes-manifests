@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: merge-bot
+    version: v1
+  name: merge-bot-ledisdb
+  namespace: merge-bot
+spec:
+  replicas: 1
+  selector:
+    app: merge-bot
+    role: ledisdb
+    version: v1
+  template:
+    metadata:
+      labels:
+        app: merge-bot
+        role: ledisdb
+        version: v1
+    spec:
+      containers:
+      - image: bborbe/ledisdb:latest
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /PING
+            port: 11181
+            scheme: HTTP
+          initialDelaySeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: ledisdb
+        volumeMounts:
+        - mountPath: /data
+          name: merge-bot-ledisdb
+        ports:
+        - containerPort: 8080
+          name: merge-bot
+        readinessProbe:
+          httpGet:
+            path: /PING
+            port: 11181
+            scheme: HTTP
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 100m
+            memory: 50Mi
+          requests:
+            cpu: 10m
+            memory: 10Mi
+      nodeSelector:
+        role: worker
+      volumes:
+      - name: merge-bot-ledisdb
+        nfs:
+          path: /data/merge-bot-ledisdb
+          server: {{nfs_server}}
