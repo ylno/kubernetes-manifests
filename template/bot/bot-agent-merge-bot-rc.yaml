@@ -29,7 +29,7 @@ spec:
         - name: NSQ_LOOKUPD_ADDRESS
           value: nsqlookupd.nsq.svc.cluster.local:4161
         - name: MERGE_BOT_ADDRESS
-          value: merge-bot.merge-bot.svc.cluster.local:8080
+          value: merge-bot.merge-bot.svc.cluster.local:8080/merge-bot
         image: bborbe/bot-agent-merge-bot:latest
         name: agent
         ports:
