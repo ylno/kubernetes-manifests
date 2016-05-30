@@ -45,14 +45,14 @@ spec:
               key: secret
               name: merge-bot
         - name: AUTH_ADDRESS
-          value: "auth-api.auth.svc.cluster.local:8080"
+          value: auth-api.auth.svc.cluster.local:8080
         - name: AUTH_APPLICATION_NAME
-          value: "merge-bot"
+          value: merge-bot
         - name: AUTH_APPLICATION_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: merge-bot
               key: auth-application-password
+              name: merge-bot
         image: bborbe/merge-bot:latest
         name: merge-bot
         ports:
