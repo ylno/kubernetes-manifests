@@ -10,11 +10,13 @@ spec:
   replicas: 1
   selector:
     app: merge-bot
+    role: core
     version: v1
   template:
     metadata:
       labels:
         app: merge-bot
+        role: core
         version: v1
     spec:
       containers:
@@ -25,6 +27,8 @@ spec:
           value: "8080"
         - name: PREFIX
           value: /merge-bot
+        - name: LEDISDB_ADDRESS
+          value: merge-bot-ledisdb:6380
         - name: USERNAME
           valueFrom:
             secretKeyRef:
@@ -39,6 +43,15 @@ spec:
           valueFrom:
             secretKeyRef:
               key: secret
+              name: merge-bot
+        - name: AUTH_ADDRESS
+          value: auth-api.auth.svc.cluster.local:8080
+        - name: AUTH_APPLICATION_NAME
+          value: merge-bot
+        - name: AUTH_APPLICATION_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: auth-application-password
               name: merge-bot
         image: bborbe/merge-bot:latest
         name: merge-bot
