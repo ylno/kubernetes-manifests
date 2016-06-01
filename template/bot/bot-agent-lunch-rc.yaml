@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: bot
+    role: agent-lunch
+    version: v1
+  name: bot-agent-lunch
+  namespace: bot
+spec:
+  replicas: 1
+  selector:
+    app: bot
+    role: agent-lunch
+    version: v1
+  template:
+    metadata:
+      labels:
+        app: bot
+        role: agent-lunch
+        version: v1
+    spec:
+      containers:
+      - env:
+        - name: LUNCH_HIPCHAT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: lunch-hipchat-password
+              name: bot
+        - name: LUNCH_CONFLUENCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: lunch-confluence-password
+              name: bot
+        image: sjanusch/bot-agent-lunch:latest
+        name: agent
+        resources:
+          limits:
+            cpu: 500m
+            memory: 150Mi
+          requests:
+            cpu: 10m
+            memory: 75Mi
+      nodeSelector:
+        role: worker
