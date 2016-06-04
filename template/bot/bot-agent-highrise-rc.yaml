@@ -35,6 +35,8 @@ spec:
             secretKeyRef:
               key: highrise-auth-application-password
               name: bot
+        - name: BOT_NAME
+          value: highrise
         image: quay.io/seibertmedia/bot-agent-highrise:latest
         name: agent
         resources:
